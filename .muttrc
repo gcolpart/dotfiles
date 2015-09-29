@@ -1,0 +1,132 @@
+my_hdr From: John Doe <jdoe@example.com>
+#set realname="John Doe"
+#set from="jdoe@example.com"
+#set use_from=yes
+set envelope_from=yes
+set signature=~/.signature
+set shell="/bin/bash"
+set mbox_type=Maildir
+set move=no
+set spoolfile="~/Maildir"
+set folder="~/Maildir"
+set edit_hdrs
+set editor="vim -c 'set textwidth=65' -c 'set ft=mail'"
+#set charset="utf-8"
+#set send_charset="us-ascii:iso-8859-1:iso-8859-15:utf-8"
+set send_charset="utf-8"
+set include=yes
+#set print_command="lpr -P foo -h"
+set hostname=
+set print_command="muttprint"
+set history=1024
+set save_history=2048
+set history_file="~/.mutt/history"
+
+# disable check for new msgs
+set check_new=no
+# time between check for new msg (to be confirmed)
+#set mail_check=300
+
+# drafts, sent, trash(need patch)
+set postponed="~/Maildir/.Draft"
+set record="~/Maildir/.Sent"
+#set trash="~/Maildir/.Trash"
+
+# headers cache
+#set header_cache=~/.mutt/cache
+#set header_cache="~/.mutt/cache-dir/
+#set header_cache="~/tmp/mutt-foo-cache-dir/"
+#set maildir_header_cache_verify = no
+set header_cache="/var/tmp/mutt-foo-cache-dir/"
+
+# forwarding
+set mime_forward=ask-no
+set mime_forward_rest=yes
+
+# keyboard shortcuts 
+bind generic    \eOH        first-entry
+bind generic    \eOF        last-entry
+bind generic    <up>        previous-entry
+bind generic    <down>      next-entry
+bind generic    <pageup>    previous-page
+bind generic    <pagedown>  next-page
+bind pager      <up>        previous-line
+bind pager      <down>      next-line
+
+# mutt sidebar settings
+bind index,pager \CP sidebar-prev
+bind index,pager \CN sidebar-next
+bind index,pager \CO sidebar-open
+macro index,pager B '<enter-command>toggle sidebar_visible<enter>'
+color sidebar_new yellow default
+
+# macros
+macro index     <f12>           c?\t
+macro index     <f11>           c?\t
+macro pager     <f12>           c?\t
+macro pager     <f11>           c?\t
+macro index     <f2>            ":source ~/.mutt/profile.foo\nm"
+#macro index    S       ":unset wait_key\n| nice sa-learn --spam\nset wait_key\ns=.spam\n"
+#macro index    S       ":unset wait_key\n| nice spamassassin -r -L\nset wait_key\ns=.spam\n"
+#macro index    H       ":unset wait_key\n| nice sa-learn --ham\nset wait_key\ns=.\n"
+macro  index    S       "<enter-command>unset wait_key\n<pipe-entry>bogofilter -s\n<enter-command>set wait_key\ns=.spam\n" "mark message as spam"
+macro index X "<save-message>=.Trash<enter>"
+macro pager X "<save-message>=.Trash<enter>"
+
+# HEADERS
+# don't display headers...
+ignore *
+# in fact only these headers
+unignore From To Cc Subject Date Reply-To X-Mailer User-Agent X-Approved-By Message-ID References X-Bogosity X-Spam-Status
+# order by
+hdr_order Date From To Cc Subject
+
+# change msgs 'N'->'O' when closing mailbox ?
+# only for some mailboxes
+#folder-hook =. "set mark_old"
+#folder-hook . "unset mark_old"
+#unset mark_old
+# TODO: find mutt-regex to match :-/
+folder-hook . "unset mark_old"
+folder-hook "=.a.*" "set mark_old"
+folder-hook "=.b.*" "set mark_old"
+folder-hook "=.c.*" "set mark_old"
+folder-hook "=.d.*" "set mark_old"
+folder-hook "=.e.*" "set mark_old"
+folder-hook "=.f.*" "set mark_old"
+folder-hook "=.h.*" "set mark_old"
+folder-hook "=.k.*" "set mark_old"
+folder-hook "=.l.*" "set mark_old"
+folder-hook "=.o.*" "set mark_old"
+folder-hook "=.p.*" "set mark_old"
+folder-hook "=.r.*" "set mark_old"
+folder-hook "=.s.*" "set mark_old"
+#folder-hook . "color index blue default '~h .*'"
+#folder-hook . 'push "<limit>~U<enter><last-entry>"'
+folder-hook . 'push "<limit>~U ( ~C jdoe@ | ~Q )<enter><last-entry>"'
+folder-hook . 'set read_inc=1000'
+folder-hook . 'set write_inc=1000'
+
+# Message-ID
+send-hook . 'my_hdr Message-ID:`date "+<%Y%m%d%H%m%S.\`pwgen -1\`@hamtrap.XXXXX>"`'
+
+# prefer txt but visualize HTML and Word
+# see ~/.mailcap or /etc/mailcap
+alternative_order text/enriched text/plain text
+auto_view text/html
+# by default:  /usr/bin/lynx -dump -force_html ''/tmp/mutt.html''
+auto_view application/msword
+auto_view application/ms-word
+auto_view application/vnd.ms-excel
+
+# LDAP search with magic script
+set query_command = "perl ~/bin/mutt-ldap.pl '%s'"
+
+# color (bu lot of CPU...)
+#color index red default '~h "X-Spam-Status:.*score=(1|2)."'
+#color index brightred default '~h "X-Spam-Status:.*score=(3|4|5|6|7|8|9)."'
+#color index green default '~h "Subject:.*\\[(TAF|RFR?|TODO|NEW).*"'
+
+# alias
+alias foo "Foo Bar" <foo@bar>
+

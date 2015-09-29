@@ -1,0 +1,3 @@
+XTerm*on3Clicks:  regex [^ \n]+
+XTerm*on4Clicks:  regex [^#$]+
+XTerm*on5Clicks:  line
